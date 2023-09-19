@@ -1,0 +1,63 @@
+{
+    "listeners": {
+        "*:443":{
+            "pass":"routes",
+            "tls":{
+                "certificate":"bundle",
+                "conf_commands":{
+                    "ciphersuites":"TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256",
+                    "minprotocol":"TLSv1.2"
+                },
+                "session":{
+                    "cache_size":1024,
+                    "timeout":60,
+                    "tickets":[
+                        "qpV1KjTOqEisH2nnY76zUciSNlfrdu2+BWCwtgwAr6EB+uk2rK3PVXYAlAdz8DKl",
+                        "D596nU2DS8i+hG3S4Q2bzoMRUjBRkMug1Llrn42lVMaqaa/s9C/6obYOSOGrTpvF"
+                    ]
+                }
+            }
+        }
+
+    },
+
+    "routes": [
+        {
+            "match": {
+                "uri": [
+                    "!/static/*",		
+                    "*.php",
+                    "*.php/*"
+                ]
+            },
+
+            "action": {
+                "pass": "applications/phpapp/direct"
+            }
+        },
+        {
+            "action": {
+                "share": "/phpapp/public$uri",
+                "fallback": {
+                    "pass": "applications/phpapp/index"
+                }
+            }
+        }
+    ],
+
+    "applications": {
+        "phpapp": {
+            "type": "php",
+            "targets": {
+                "direct": {
+                    "root": "/phpapp/public"
+                },
+
+                "index": {
+                    "root": "/phpapp/public",
+                    "script": "index.php"
+                }
+            }
+        }
+    }
+}
